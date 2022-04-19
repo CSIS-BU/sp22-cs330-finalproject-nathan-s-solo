@@ -8,11 +8,13 @@ HEIGHT = 600
 LINE_SIZE = 6
 WHITE = (250, 250, 250)
 BLACK = (0, 0, 0)
+BLUE = (29, 37, 153)
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 screen.fill(WHITE)
 pygame.display.set_caption('Game')
 player = 1
 player_turn = True
+game_over = False
 
 raw_letter_x = pygame.image.load(os.path.join("images", "x_image.png"))
 letter_x = pygame.transform.scale(raw_letter_x, (((WIDTH/3) - 15), ((HEIGHT/3) - 15)))
@@ -34,34 +36,56 @@ def draw():
             elif grid[y][x] == "O":
                 screen.blit(letter_o, ((x*(WIDTH/3)) + WIDTH/100, (y*(HEIGHT/3))+ HEIGHT/100))
 
+def draw_win_line(start_space, end_space):
+    x1 = start_space[0] * (WIDTH/3)
+    x1 = x1 + ((WIDTH/3)/2)
+    y1 = start_space[1] * (HEIGHT/3)
+    y1 = y1 + ((HEIGHT/3)/2)
+    x2 = end_space[0] * (WIDTH/3)
+    x2 = x2 + ((WIDTH/3)/2)
+    y2 = end_space[1] * (HEIGHT/3)
+    y2 = y2 + ((HEIGHT/3)/2)
+    pygame.draw.line(screen, BLUE, (x1, y1), (x2,y2), LINE_SIZE)
+
 def win_check():
 
     if grid[2][0] == "X" and grid[1][1] == "X" and grid[0][2] == "X":
-        print("x asc dia win")
+        draw_win_line((2,0),(0,2))
+        return True
     elif grid[2][0] == "O" and grid[1][1] == "O" and grid[0][2] == "O":
-        print("o asc dia win")
+        draw_win_line((2,0),(0,2))
+        return True
     if grid[0][0] == "X" and grid[1][1] == "X" and grid[2][2] == "X":
-        print("x dsc dia win")
+        draw_win_line((0,0),(2,2))
+        return True
     elif grid[0][0] == "O" and grid[1][1] == "O" and grid[2][2] == "O":
-        print("o dsc dia win")
+        draw_win_line((0,0),(2,2))
+        return True
 
     for i in range(len(grid)):
         if grid[0][i] == "X" and grid[1][i] == "X" and grid[2][i] == "X":
-            print("x vert win")
+            draw_win_line((i,0),(i,2))
+            return True
         elif grid[0][i] == "O" and grid[1][i] == "O" and grid[2][i] == "O":
-            print("o vert win")
+            draw_win_line((i,0),(i,2))
+            return True
         if grid[i][0] == "X" and grid[i][1] == "X" and grid[i][2] == "X":
-            print("x hori win")
+            draw_win_line((0,i),(2,i))
+            return True
         elif grid[i][0] == "O" and grid[i][1] == "O" and grid[i][2] == "O":
-            print("o hori win")
+            draw_win_line((0,i),(2,i))
+            return True
+    return False
 
 
+
+draw()
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and game_over == False:
             if pygame.mouse.get_pressed()[0]:
                 pos = pygame.mouse.get_pos()
                 x_box = int(pos[0] // (WIDTH/3))
@@ -72,6 +96,6 @@ while True:
                     grid[y_box][x_box] = "O"
                 print(x_box, y_box)
                 print(grid)
-                win_check()
-        draw()
+                draw()
+                game_over = win_check()
         pygame.display.update()
