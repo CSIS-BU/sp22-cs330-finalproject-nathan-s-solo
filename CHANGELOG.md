@@ -1,5 +1,7 @@
 
 # Changelog
+## 4/20/22
+  * added base code for socket programming for client and server code
 ## 4/18/22
   * added a line to visually show the winning 3 squares
   * the game stops after a winner is detected
