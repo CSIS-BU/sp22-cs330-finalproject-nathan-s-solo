@@ -24,17 +24,16 @@ server_id.bind((host, server_port))
 server_id.listen(QUEUE_LENGTH)
 
 
-def  handle_client(conn, addr, ID):
+def  handle_client(conn, addr, t_counter):
     while True:
         data = conn.recv(BUFFER_SIZE)
         print(data.decode())
         if data:
-            players[(1+ID)%2].sendall(data)
+            players[(1+t_counter)%2].sendall(data)
     conn.close()
 
 while True:
         conn, addr = server_id.accept()
-        print('Connected to: ' + addr[0] + ':' + str(addr[1]))
         if len(players)<3:
             players.append(conn)
             if len(players)==2:
@@ -44,8 +43,8 @@ while True:
         thread.daemon = True
         thread.start()
         thread_counter += 1
-        print('Thread Number: ' + str(thread_counter))
-        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+        print('Thread Count: ' + str(thread_counter))
+        print("Active Connections: ", (threading.active_count() - 1))
 server_id.close()
 # create_thread(waiting_for_connection)
 
