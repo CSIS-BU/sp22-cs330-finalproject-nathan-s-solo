@@ -1,5 +1,8 @@
 
 # Changelog
+## 4/23/22
+  * added server accepting multiple clients at the same time with multithreading
+  * added each player taking turns and their moves being reflected in both client programs
 ## 4/20/22
   * added base code for socket programming for client and server code
 ## 4/18/22
