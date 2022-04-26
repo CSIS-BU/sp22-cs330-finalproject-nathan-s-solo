@@ -1,5 +1,14 @@
 
 # Changelog
+## 4/25/22
+  * added main menu
+  * added input menu to input ip and port info
+  * added some input validation for the input menu
+  * added status update during game to give the player information about the game state
+  * added game logic to handle a tie
+  * added return to menu button once the game has ended to allow players to play again
+  * added the server being able to handle multiple games in one session without needing to restart
+  * smoothed out and fixed bugs with the simultaneous client connection
 ## 4/23/22
   * added server accepting multiple clients at the same time with multithreading
   * added each player taking turns and their moves being reflected in both client programs

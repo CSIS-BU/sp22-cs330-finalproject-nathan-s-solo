@@ -1,5 +1,3 @@
-import sys, os
-import pygame
 import socket
 import threading
 
@@ -7,10 +5,8 @@ BUFFER_SIZE = 2048
 QUEUE_LENGTH = 10
 
 players = []
-grid = [[0 for x in range(3)] for y in range(3)]
-# server_port = input("Enter port number: ")
-# server_port = int(server_port)
-server_port = 6728
+server_port = input("Enter port number: ")
+server_port = int(server_port)
 host = ""
 thread_counter = 0
 
@@ -26,16 +22,27 @@ server_id.listen(QUEUE_LENGTH)
 
 def  handle_client(conn, addr, t_counter):
     while True:
-        data = conn.recv(BUFFER_SIZE)
-        print(data.decode())
+        data = conn.recv(BUFFER_SIZE).decode()
+        print(data)
         if data:
-            players[(1+t_counter)%2].sendall(data)
-    conn.close()
+            if data == "GAMEOVER":
+                players.clear()
+                conn.close()
+                return
+            else:
+                players[(1+t_counter)%2].sendall(data.encode())
+        elif not data:
+            print(players)
+            players.clear()
+            conn.close()
+            return
+
 
 while True:
         conn, addr = server_id.accept()
         if len(players)<3:
             players.append(conn)
+            print(len(players))
             if len(players)==2:
                 for i in range(len(players)):
                     players[i].send(str(i).encode())
@@ -46,30 +53,3 @@ while True:
         print('Thread Count: ' + str(thread_counter))
         print("Active Connections: ", (threading.active_count() - 1))
 server_id.close()
-# create_thread(waiting_for_connection)
-
-# def start_server(server_port):
-
-#     sys.stdout.flush()
-
-#     #while loop that continously loops while the server waits for a client socket connection and when a connection is accepted
-#     #data is continously received in 2048 byte chunks and written to stdout until no more data is received and then the client socket is closed
-#     while True:
-#         (client_socket, ip) = server_id.accept()
-#         msg = client_socket.recv(RECV_BUFFER_SIZE)
-#         while msg:
-#             sys.stdout.buffer.write(msg)
-#             sys.stdout.flush()
-#             msg = client_socket.recv(RECV_BUFFER_SIZE)
-#         client_socket.close()
-
-
-# def main():
-#     """Parse command-line argument and call server function """
-#     if len(sys.argv) != 2:
-#         sys.exit("Usage: python server-python.py [Server Port]")
-#     server_port = int(sys.argv[1])
-#     start_server(server_port)
-
-# if __name__ == "__main__":
-#     main()
