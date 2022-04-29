@@ -3,6 +3,7 @@ import socket
 import pygame, sys, os
 import threading
 
+#initalize variables
 pygame.init()
 
 BUFFER_SIZE = 2048
@@ -33,7 +34,9 @@ letter_o = pygame.transform.scale(raw_letter_o, (((WIDTH/3) - 15), ((HEIGHT/3) -
 
 grid = [[0 for x in range(3)] for y in range(3)]
 
+#function to render the grid and grid values
 def draw():
+    screen.fill(WHITE)
     pygame.draw.line(screen, BLACK, (WIDTH/3, 0), (WIDTH/3,HEIGHT), LINE_SIZE)
     pygame.draw.line(screen, BLACK, (0, HEIGHT/3), (WIDTH,HEIGHT/3), LINE_SIZE)
     pygame.draw.line(screen, BLACK, (WIDTH/1.5, 0), (WIDTH/1.5,HEIGHT), LINE_SIZE)
@@ -46,6 +49,7 @@ def draw():
             elif grid[y][x] == "O":
                 screen.blit(letter_o, ((x*(WIDTH/3)) + WIDTH/100, (y*(HEIGHT/3))+ HEIGHT/100))
 
+#function to draw a line through the winning 3 spaces
 def draw_win_line(start_space, end_space):
     x1 = start_space[0] * (WIDTH/3)
     x1 = x1 + ((WIDTH/3)/2)
@@ -57,6 +61,7 @@ def draw_win_line(start_space, end_space):
     y2 = y2 + ((HEIGHT/3)/2)
     pygame.draw.line(screen, BLUE, (x1, y1), (x2,y2), LINE_SIZE)
 
+#function to create status texts so the player know the current game state
 def status_text(update_text):
     pygame.draw.rect(screen, (38, 44, 66), (0, 578, 210, 45))
     update_font = pygame.font.Font('freesansbold.ttf', 12)
@@ -66,6 +71,7 @@ def status_text(update_text):
     screen.blit(updated_text, updated_textRect)
     pygame.display.flip()
 
+#game logic to determine a winner
 def win_check():
 
     if grid[2][0] == "X" and grid[1][1] == "X" and grid[0][2] == "X":
@@ -111,6 +117,7 @@ def win_check():
         return True
     return False
 
+#function to create an error message on the input screen
 def input_error(text):
     inputerror_font = pygame.font.Font('freesansbold.ttf', 24)
     inputerror_text = inputerror_font.render(text, True, (217, 78, 78))
@@ -118,6 +125,7 @@ def input_error(text):
     inputerror_textRect.center = ((WIDTH //2), HEIGHT // (HEIGHT / 350))
     screen.blit(inputerror_text, inputerror_textRect)
 
+#function to run in a thread so the client who is waiting for their turn can receive data without the client window freezing
 def wait_for_data():
     global player, player_turn, game_over
     data = client.recv(BUFFER_SIZE).decode()
@@ -175,6 +183,7 @@ text = ''
 draw()
 while True:
     if menu and game_over == False:
+        #render main menu visuals
         if main_menu:
             screen.fill(WHITE)
             play_button_rect = pygame.Rect(((WIDTH // 2) - 60, HEIGHT // 1.8, 120, 45))
@@ -185,6 +194,7 @@ while True:
             render_title()
             screen.blit(play_text, play_textRect)
             screen.blit(credit_text, credit_textRect)
+        #render input menu visuals
         elif input_menu:
             screen.fill(WHITE)
             render_title()
@@ -202,6 +212,7 @@ while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            #if the play button is pressed go to the input meny
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     if play_button_rect.collidepoint(event.pos):
@@ -213,6 +224,7 @@ while True:
                     else:
                         active = False
                     color = color_active if active else color_inactive
+            #determines text input from user and displays it in the input box. also reads input to connect to socket
             if event.type == pygame.KEYDOWN:
                 if active:
                     if event.key == pygame.K_RETURN:
@@ -230,7 +242,6 @@ while True:
                                     text = ''
                                     socket_error = True
                                     break
-                                screen.fill(WHITE) 
                                 draw()
                                 status_text("Waiting for Opponent")
                                 pygame.display.flip()
@@ -246,6 +257,8 @@ while True:
                                 thread.start()
                                 menu = False
                                 input_menu = False
+                                invalid_input = False
+                                socket_error = False
                                 main_menu = True
                                 text = ''
                             else:
@@ -260,6 +273,7 @@ while True:
                         if len(text) < 30:
                             text += event.unicode
         pygame.display.flip()
+    #detects clicks and updates the grid values and sends the coordinate data to the server
     elif not menu and game_over == False:
         if player_turn == True:
             status_text("Your Turn")
@@ -291,6 +305,7 @@ while True:
                         draw()
                         win_check()
         pygame.display.flip()
+    #renders return to menu button and resets game once it is over
     if not menu and game_over == True:
         return_text = play_font.render("Return to Menu", 1, (237, 237, 237))
         return_textRect = return_text.get_rect()

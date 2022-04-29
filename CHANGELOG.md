@@ -1,5 +1,7 @@
 
 # Changelog
+## 4/28/22
+  * fixed a visual bug with the input menu error messages
 ## 4/25/22
   * added main menu
   * added input menu to input ip and port info

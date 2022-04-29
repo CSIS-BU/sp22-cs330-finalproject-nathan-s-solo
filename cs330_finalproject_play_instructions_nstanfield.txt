@@ -1,0 +1,9 @@
+1. run server.py and enter port number
+2. open 2 client.py instances
+3. on each client instance, press play and enter ip and port in input menu
+4. use format ip|port for input (example: 127.0.0.1|6728)
+5. once both clients connect to server, when it is one of the clients turn, a space on the grid can be clicked on to 
+place an X or O in that space
+6. the data of what space was clicked and whether an X or an O was placed is sent to the server and then the other client
+7. continue to play until a winner or tie is determined
+8. return to menu button appears allowing the clients to return to main menu and repeat from step 3

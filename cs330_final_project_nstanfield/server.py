@@ -37,7 +37,7 @@ def  handle_client(conn, addr, t_counter):
             conn.close()
             return
 
-
+#loop that accepts connections and adds the socket connection to a list if there are less then 2 already in the list. then creates a thread so multiple clients can connect simultaneously
 while True:
         conn, addr = server_id.accept()
         if len(players)<3:
